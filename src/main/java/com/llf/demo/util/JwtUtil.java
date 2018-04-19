@@ -10,7 +10,7 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+import org.springframework.util.Assert;
 import sun.misc.BASE64Decoder;
 
 import java.io.File;
@@ -32,71 +32,82 @@ public class JwtUtil {
     private static Key privateKey;
     private static Key publicKey;
 
-    private JwtUtil() {
-    }
-
-    public static String generateToken(String issUser, String audience, Float minutes, Map<String, Object> payLoadMap) throws JoseException {
-        if(StringUtils.isEmpty(issUser)) {
-            logger.debug("令牌创建者为空");
-            return null;
-        } else if(StringUtils.isEmpty(audience)) {
-            logger.debug("令牌使用者为空");
-            return null;
-        } else if(minutes == null) {
-            logger.debug("令牌有效时间为空");
-            return null;
-        } else {
-            JwtClaims claims = new JwtClaims();
-            claims.setIssuer(issUser);
-            claims.setAudience(issUser);
-            claims.setExpirationTimeMinutesInTheFuture(minutes.floatValue());
-            claims.setGeneratedJwtId();
-            claims.setIssuedAtToNow();
-            claims.setNotBeforeMinutesInThePast(1.0F);
-            claims.setSubject("subject");
-            Iterator var5 = payLoadMap.entrySet().iterator();
-
-            while(var5.hasNext()) {
-                Map.Entry<String, Object> entry = (Map.Entry)var5.next();
-                String key = ((String)entry.getKey()).toString();
-                String value = entry.getValue() == null?"":entry.getValue().toString();
-                claims.setClaim(key, value);
-            }
-
-            claims.setClaim("audience", audience);
-            JsonWebSignature jws = new JsonWebSignature();
-            jws.setPayload(claims.toJson());
-            jws.setKey(privateKey);
-            jws.setKeyIdHeaderValue("k1");
-            jws.setAlgorithmHeaderValue("RS256");
-            return jws.getCompactSerialization();
-        }
-    }
-
-    public static Map<String, Object> checkToken(String token, String isUser, String audience) throws InvalidJwtException {
-        JwtConsumer jwtConsumer = (new JwtConsumerBuilder()).setRequireExpirationTime().setAllowedClockSkewInSeconds(30).setRequireSubject().setExpectedIssuer(isUser).setExpectedAudience(new String[]{audience}).setVerificationKey(publicKey).build();
-        JwtClaims jwtClaims = jwtConsumer.processToClaims(token);
-        Map<String, Object> payLoadMap = jwtClaims.getClaimsMap();
-        logger.debug("token 校验成功" + payLoadMap);
-        return payLoadMap;
-    }
-
     static {
         try {
             Configuration configuration = (new Configurations()).properties(new File("/", "jwt.properties"));
             byte[] keyBytes = (new BASE64Decoder()).decodeBuffer(configuration.getString("privateKey"));
-            PKCS8EncodedKeySpec keySpec_privateKey = new PKCS8EncodedKeySpec(keyBytes);
-            KeyFactory keyFactory_privateKey = KeyFactory.getInstance("RSA");
-            privateKey = keyFactory_privateKey.generatePrivate(keySpec_privateKey);
+            PKCS8EncodedKeySpec keySpecPrivateKey = new PKCS8EncodedKeySpec(keyBytes);
+            KeyFactory keyFactoryPrivateKey = KeyFactory.getInstance("RSA");
+            privateKey = keyFactoryPrivateKey.generatePrivate(keySpecPrivateKey);
+
             keyBytes = (new BASE64Decoder()).decodeBuffer(configuration.getString("publicKey"));
-            X509EncodedKeySpec keySpec_publicKey = new X509EncodedKeySpec(keyBytes);
-            KeyFactory keyFactory_publicKey = KeyFactory.getInstance("RSA");
-            publicKey = keyFactory_publicKey.generatePublic(keySpec_publicKey);
-        } catch (Exception var6) {
-            logger.error("", var6);
+            X509EncodedKeySpec keySpecPublicKey = new X509EncodedKeySpec(keyBytes);
+            KeyFactory keyFactoryPublicKey = KeyFactory.getInstance("RSA");
+            publicKey = keyFactoryPublicKey.generatePublic(keySpecPublicKey);
+        } catch (Exception e) {
+            logger.error("", e);
             System.exit(1);
         }
+    }
 
+    private JwtUtil() {
+    }
+
+    public static String generateToken(String issUser, String audience, Float minutes, Map<String, Object> payLoadMap) throws JoseException {
+
+        Assert.state(issUser != null && !"".equals(issUser), "issUser cannot be empty!");
+
+        Assert.state(audience != null && !"".equals(audience), "audience cannot be empty!");
+
+        Assert.state(minutes != null, "minutes cannot be null!");
+
+        Assert.state(payLoadMap != null && !payLoadMap.isEmpty(), "payLoadMap cannot be empty!");
+
+        JwtClaims claims = new JwtClaims();
+        claims.setIssuer(issUser);
+        claims.setAudience(issUser);
+        claims.setExpirationTimeMinutesInTheFuture(minutes);
+        claims.setGeneratedJwtId();
+        claims.setIssuedAtToNow();
+        claims.setNotBeforeMinutesInThePast(1.0F);
+        claims.setSubject("subject");
+
+        Set<Map.Entry<String, Object>> entries = payLoadMap.entrySet();
+        for (Map.Entry<String, Object> entry : entries){
+            String key = entry.getKey();
+            String value = entry.getValue() == null ? "" : entry.getValue().toString();
+            claims.setClaim(key, value);
+        }
+
+        claims.setClaim("audience", audience);
+        JsonWebSignature jws = new JsonWebSignature();
+        jws.setPayload(claims.toJson());
+        jws.setKey(privateKey);
+        jws.setKeyIdHeaderValue("k1");
+        jws.setAlgorithmHeaderValue("RS256");
+        return jws.getCompactSerialization();
+    }
+
+    public static Map<String, Object> checkToken(String token, String isUser, String audience) throws InvalidJwtException {
+
+        Assert.state(token != null && !"".equals(token), "token cannot be empty!");
+
+        Assert.state(isUser != null && !"".equals(isUser), "isUser cannot be empty!");
+
+        Assert.state(audience != null && !"".equals(audience), "audience cannot be empty!");
+
+        JwtConsumer jwtConsumer = (new JwtConsumerBuilder())
+                .setRequireExpirationTime()
+                .setAllowedClockSkewInSeconds(30)
+                .setRequireSubject()
+                .setExpectedIssuer(isUser)
+                .setExpectedAudience(audience)
+                .setVerificationKey(publicKey)
+                .build();
+        JwtClaims jwtClaims = jwtConsumer.processToClaims(token);
+        Map<String, Object> payLoadMap = jwtClaims.getClaimsMap();
+        logger.debug("token check success!" + payLoadMap);
+        return payLoadMap;
     }
 
     public static void main(String[] args) throws InvalidJwtException, JoseException {
