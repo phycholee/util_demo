@@ -23,19 +23,13 @@ import java.util.Set;
 
 /**
  * @author: Oliver.li
- * @Description: HTTP请求工具类
+ * @Description: HTTP请求工具类，只针对返回json数据
  * @date: 2018/4/18 10:52
  */
 @SuppressWarnings("Duplicates")
 public class HttpUtil {
 
     private static Logger logger = LoggerFactory.getLogger(HttpUtil.class);
-
-    private static SimpleClientHttpRequestFactory requestFactory;
-    {
-        requestFactory = new SimpleClientHttpRequestFactory();
-    }
-
 
     public static JSONObject get(String url) throws Exception {
         return get(url, null);
@@ -46,6 +40,8 @@ public class HttpUtil {
     }
 
     public static JSONObject get(String url, Map<String, String> params, Map<String, String> headers) throws Exception {
+        Assert.state(url != null && !"".equals(url), "url cannot be empty!");
+
         StringBuilder sb = new StringBuilder(url);
 
         if (params != null && params.size() > 0) {
@@ -62,7 +58,7 @@ public class HttpUtil {
             }
         }
 
-        String result = httpRequest(sb.toString(), HttpMethod.GET, null, headers);
+        String result = httpRequest(sb.toString(), HttpMethod.GET, null, headers, false);
         return JSON.parseObject(result, JSONObject.class);
     }
 
@@ -75,7 +71,11 @@ public class HttpUtil {
     }
 
     public static JSONObject post(String url, Map<String, String> params, Map<String, String> headers) throws Exception {
-        String result = httpRequest(url, HttpMethod.POST, params, headers);
+        return post(url, params, headers, false);
+    }
+
+    public static JSONObject post(String url, Map<String, String> params, Map<String, String> headers, boolean isJsonRequest) throws Exception {
+        String result = httpRequest(url, HttpMethod.POST, params, headers, isJsonRequest);
         return JSON.parseObject(result, JSONObject.class);
     }
 
@@ -88,7 +88,11 @@ public class HttpUtil {
     }
 
     public static JSONObject put(String url, Map<String, String> params, Map<String, String> headers) throws Exception {
-        String result = httpRequest(url, HttpMethod.PUT, params, headers);
+        return put(url, params, headers, false);
+    }
+
+    public static JSONObject put(String url, Map<String, String> params, Map<String, String> headers, boolean isJsonRequest) throws Exception {
+        String result = httpRequest(url, HttpMethod.PUT, params, headers, isJsonRequest);
         return JSON.parseObject(result, JSONObject.class);
     }
 
@@ -101,6 +105,8 @@ public class HttpUtil {
     }
 
     public static JSONObject delete(String url, Map<String, String> params, Map<String, String> headers) throws Exception {
+        Assert.state(url != null && !"".equals(url), "url cannot be empty!");
+
         StringBuilder sb = new StringBuilder(url);
 
         if (params != null && params.size() > 0) {
@@ -117,22 +123,21 @@ public class HttpUtil {
             }
         }
 
-        String result = httpRequest(sb.toString(), HttpMethod.DELETE, null, headers);
+        String result = httpRequest(sb.toString(), HttpMethod.DELETE, null, headers, false);
         return JSON.parseObject(result, JSONObject.class);
     }
 
-    private static String httpRequest(String url, HttpMethod method, Map<String, String> params, Map<String, String> headers)  throws Exception {
+    private static String httpRequest(String url, HttpMethod method, Map<String, String> params, Map<String, String> headers, boolean isJsonRequest)  throws Exception {
 
         Assert.state(url != null && !"".equals(url), "url cannot be empty!");
 
         URI uri = new URI(url);
 
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+
         ClientHttpRequest request = requestFactory.createRequest(uri, method);
 
-        if (params != null && params.size() > 0) {
-            request.getBody().write(params.toString().getBytes());
-        }
-
+        request.getHeaders().add(HttpHeaders.ACCEPT, "application/json;charset=UTF-8");
         if (headers != null && headers.size() > 0) {
             MultiValueMap<String, String> httpHeaders = new HttpHeaders();
 
@@ -144,9 +149,26 @@ public class HttpUtil {
             request.getHeaders().addAll(httpHeaders);
         }
 
-        ClientHttpResponse response = request.execute();
+        if (params != null && params.size() > 0) {
+            String paramStr;
+            if (isJsonRequest) {
+                request.getHeaders().add(HttpHeaders.CONTENT_TYPE, "application/json;charset=UTF-8");
+                paramStr = JSON.toJSONString(params);
+            } else {
+                paramStr = params.toString();
+            }
+            request.getBody().write(paramStr.getBytes());
+        }
 
+        logger.info("sending http request...");
+        logger.info("{}: {}", method, url);
+        logger.info("params: {}", params);
+        logger.info("headers: {}", request.getHeaders());
+
+        ClientHttpResponse response = request.execute();
         HttpStatus statusCode = response.getStatusCode();
+
+        logger.info("request complete. statusCode: {}", statusCode);
 
         if (HttpStatus.OK == statusCode) {
             InputStream body = response.getBody();
@@ -161,10 +183,10 @@ public class HttpUtil {
                 sb.append(line);
             }
 
+            logger.info("response message: {}", sb.toString());
             return sb.toString();
         } else {
             logger.warn("Http Request error! Http status code {}", statusCode);
-
             return null;
         }
     }
