@@ -45,7 +45,7 @@ public class JwtUtil {
             KeyFactory keyFactoryPublicKey = KeyFactory.getInstance("RSA");
             publicKey = keyFactoryPublicKey.generatePublic(keySpecPublicKey);
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error(e.getMessage(), e);
             System.exit(1);
         }
     }
