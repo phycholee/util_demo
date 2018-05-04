@@ -20,6 +20,16 @@ import java.util.*;
 /**
  * @author: Oliver.li
  * @Description: Excel工具类
+ *
+ * 提供Excel导出方法，方便导出数据使用
+ * 有三种方式
+ *
+ * 1.封装数据为普通实体类，需要传入导出列名数组，使用反射获取属性数组
+ *
+ * 2.封装数据为普通实体类或Map类，需要传入导出列名数组和属性数组。效率稍快，在使用Map类封装数据的情况下，比其余两种方法效率要快一倍
+ *
+ * 3.封装数据为普通实体类，实体类属性需要使用@ExcelColumn配置相关信息，可定制程度最高，后期可添加更多的配置项。效率最慢。
+ *
  * @date: 2018/4/28 11:23
  */
 public class ExcelUtil {
@@ -27,13 +37,13 @@ public class ExcelUtil {
     private static final Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
 
     /**
-     * export data to excel file
-     * clazz must be entity class, use reflection to get fields
-     * @param data
-     * @param fileName
-     * @param titles
-     * @param response
-     * @param clazz
+     * 不需要fields数组
+     * 使用反射去获取实体类属性名称
+     * @param data 需要导出的数据集合
+     * @param fileName 导出文件名称
+     * @param titles 列名数组
+     * @param response HttpServletResponse
+     * @param clazz 实体类Class
      * @param <T>
      * @throws IOException
      */
@@ -56,17 +66,20 @@ public class ExcelUtil {
     }
 
     /**
-     * export data to excel file
-     * @param data
-     * @param fileName
-     * @param titles
-     * @param fields
-     * @param response
+     * 导出excel数据
+     * @param data 需要导出的数据集合
+     * @param fileName 导出文件名称
+     * @param titles 列名数组
+     * @param fields 属性数组
+     * @param response HttpServletResponse
      * @param <T>
      * @throws IOException
      */
     public static<T> void export(List<T> data, String fileName, String[] titles, String[] fields, HttpServletResponse response) throws IOException {
         Assert.state(data != null, "data cannot be empty!");
+        Assert.state(fileName != null && !"".equals(fileName), "fileName cannot be empty!");
+        Assert.state(titles != null && titles.length > 0, "titles cannot be empty!");
+        Assert.state(fields != null && fields.length > 0, "fields cannot be empty!");
 
         Workbook wb = new HSSFWorkbook();
         Sheet sheet = wb.createSheet("sheet 1");
@@ -122,6 +135,75 @@ public class ExcelUtil {
     }
 
     /**
+     * 实体类需要导出的属性需要使用@ExcelColumn注解去指定 name(导出列名)、width(宽度)、dateFormat(时间格式)
+     * 使用反射去获取@ExcelColumn指定的配置
+     * 没有使用@ExcelColumn的属性会被忽略
+     * @param data 需要导出的数据集合
+     * @param fileName 导出文件名称
+     * @param response HttpServletResponse
+     * @param clazz 实体类Class
+     * @param <T>
+     * @throws IOException
+     */
+    public static<T> void export(List<T> data, String fileName, HttpServletResponse response, Class clazz) throws IOException {
+        Assert.state(data != null, "data cannot be empty!");
+        Assert.state(fileName != null && !"".equals(fileName), "fileName cannot be empty!");
+        Assert.state(clazz != null && clazz != Map.class, "clazz cannot be empty and cannot be Map.class!");
+
+        Workbook wb = new HSSFWorkbook();
+        Sheet sheet = wb.createSheet("sheet 1");
+
+        Field[] declaredFields = clazz.getDeclaredFields();
+        List<String> fields = new ArrayList<>();
+        List<String> titles = new ArrayList<>();
+        List<String> dateFormats = new ArrayList<>();
+        List<Integer> columnWidths = new ArrayList<>();
+
+        for (Field field : declaredFields) {
+            ExcelColumn excelColumn = field.getAnnotation(ExcelColumn.class);
+            if (excelColumn != null) {
+                fields.add(field.getName());
+                titles.add(excelColumn.name());
+                dateFormats.add(excelColumn.dateFormat());
+                columnWidths.add(excelColumn.width());
+            }
+        }
+
+        //set titles
+        Row row = sheet.createRow(0);
+        for (int i = 0, length = titles.size(); i < length; i++) {
+            row.createCell(i).setCellValue(titles.get(i));
+            sheet.setColumnWidth(i, columnWidths.get(i) * 256);
+        }
+
+        CellStyle cellStyle = wb.createCellStyle();
+        CreationHelper createHelper = wb.getCreationHelper();
+
+        //write data
+        logger.info("writing data to workbook");
+
+        int rowNum = 1;
+        Object value;
+        Cell cell;
+        for (T t : data) {
+            row = sheet.createRow(rowNum++);
+            for (int j = 0, length = fields.size(); j < length; j++) {
+                value = getFiledValue(fields.get(j), t);
+                cell = row.createCell(j);
+                if (value instanceof Date) {
+                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat(dateFormats.get(j)));
+                    cell.setCellValue((Date) value);
+                    cell.setCellStyle(cellStyle);
+                } else {
+                    cell.setCellValue(value == null ? "" : value.toString());
+                }
+            }
+        }
+
+        flush(fileName, wb, response);
+    }
+
+    /**
      * create cell and set value and style
      * @param wb
      * @param row
@@ -142,7 +224,7 @@ public class ExcelUtil {
     }
 
     /**
-     * get field's value
+     * 根据属性名获取属性值
      * @param fieldName
      * @param object
      * @return
@@ -162,7 +244,7 @@ public class ExcelUtil {
     }
 
     /**
-     * write data to response and flush out
+     * 写出文件
      * @param fileName
      * @param wb
      * @param response
@@ -178,7 +260,7 @@ public class ExcelUtil {
     }
 
     /**
-     * set response header
+     * 设置导出excel的响应头
      * @param fileName
      * @param response
      * @throws UnsupportedEncodingException

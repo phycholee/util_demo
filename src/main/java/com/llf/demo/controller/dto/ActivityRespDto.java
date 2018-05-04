@@ -1,5 +1,7 @@
 package com.llf.demo.controller.dto;
 
+import com.llf.demo.util.ExcelColumn;
+
 import java.util.Date;
 
 /**
@@ -9,14 +11,21 @@ import java.util.Date;
  */
 public class ActivityRespDto {
 
+    @ExcelColumn(name = "活动Id", width = 15)
     private String activityId;
 
+    @ExcelColumn(name = "活动名称")
     private String activityName;
 
+    @ExcelColumn(name = "活动类型")
     private String activityType;
 
+    private int stock;
+
+    @ExcelColumn(name = "开始时间", dateFormat = "yyyy-MM-dd HH:mm")
     private Date startTime;
 
+    @ExcelColumn(name = "结束时间", dateFormat = "yyyy-MM-dd HH:mm")
     private Date endTime;
 
     public String getActivityId() {
@@ -43,6 +52,14 @@ public class ActivityRespDto {
         this.activityType = activityType;
     }
 
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
     public Date getStartTime() {
         return startTime;
     }
@@ -65,8 +82,9 @@ public class ActivityRespDto {
                 "activityId='" + activityId + '\'' +
                 ", activityName='" + activityName + '\'' +
                 ", activityType='" + activityType + '\'' +
-                ", startTime='" + startTime + '\'' +
-                ", endTime='" + endTime + '\'' +
+                ", stock=" + stock +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
                 '}';
     }
 }
