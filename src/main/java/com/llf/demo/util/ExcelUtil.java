@@ -10,11 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -26,9 +28,9 @@ import java.util.*;
  *
  * 1.封装数据为普通实体类，需要传入导出列名数组，使用反射获取属性数组
  *
- * 2.封装数据为普通实体类或Map类，需要传入导出列名数组和属性数组。效率稍快，在使用Map类封装数据的情况下，比其余两种方法效率要快一倍
+ * 2.封装数据为普通实体类或Map类，需要传入导出列名数组和属性数组。在使用Map类封装数据的情况下，效率最高
  *
- * 3.封装数据为普通实体类，实体类属性需要使用@ExcelColumn配置相关信息，可定制程度最高，后期可添加更多的配置项。效率最慢。
+ * 3.封装数据为普通实体类，实体类属性需要使用@ExcelColumn配置相关信息，可定制程度最高，后期可添加更多的配置项。效率最低。
  *
  * @date: 2018/4/28 11:23
  */
@@ -47,7 +49,7 @@ public class ExcelUtil {
      * @param <T>
      * @throws IOException
      */
-    public static<T> void export(List<T> data, String fileName, String[] titles, HttpServletResponse response, Class clazz) throws IOException {
+    public static<T> void export(List<T> data, String fileName, String[] titles, HttpServletResponse response, Class<T> clazz) throws IOException {
         Assert.state(data != null, "data cannot be empty!");
         Assert.state(fileName != null && !"".equals(fileName), "fileName cannot be empty!");
         Assert.state(titles != null && titles.length > 0, "titles cannot be empty!");
@@ -91,9 +93,11 @@ public class ExcelUtil {
             row.createCell(i).setCellValue(titles[i]);
         }
 
-        CellStyle cellStyle = wb.createCellStyle();
-        CreationHelper createHelper = wb.getCreationHelper();
-        cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm:ss"));
+//        CellStyle cellStyle = wb.createCellStyle();
+//        CreationHelper createHelper = wb.getCreationHelper();
+//        cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm:ss"));
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         //write data
         logger.info("writing data to workbook");
@@ -111,8 +115,7 @@ public class ExcelUtil {
                     value = map.get(fields[i]);
                     cell = row.createCell(i);
                     if (value instanceof Date){
-                        cell.setCellValue((Date) value);
-                        cell.setCellStyle(cellStyle);
+                        cell.setCellValue(format.format(value));
                     } else {
                         cell.setCellValue(value == null ? "" : value.toString());
                     }
@@ -122,8 +125,7 @@ public class ExcelUtil {
                     value = getFiledValue(fields[i], t);
                     cell = row.createCell(i);
                     if (value instanceof Date){
-                        cell.setCellValue((Date) value);
-                        cell.setCellStyle(cellStyle);
+                        cell.setCellValue(format.format(value));
                     } else {
                         cell.setCellValue(value == null ? "" : value.toString());
                     }
@@ -145,7 +147,7 @@ public class ExcelUtil {
      * @param <T>
      * @throws IOException
      */
-    public static<T> void export(List<T> data, String fileName, HttpServletResponse response, Class clazz) throws IOException {
+    public static<T> void export(List<T> data, String fileName, HttpServletResponse response, Class<T> clazz) throws IOException {
         Assert.state(data != null, "data cannot be empty!");
         Assert.state(fileName != null && !"".equals(fileName), "fileName cannot be empty!");
         Assert.state(clazz != null && clazz != Map.class, "clazz cannot be empty and cannot be Map.class!");
@@ -169,18 +171,19 @@ public class ExcelUtil {
             }
         }
 
-        //set titles
+        //set titles and column width
         Row row = sheet.createRow(0);
         for (int i = 0, length = titles.size(); i < length; i++) {
             row.createCell(i).setCellValue(titles.get(i));
             sheet.setColumnWidth(i, columnWidths.get(i) * 256);
         }
 
-        CellStyle cellStyle = wb.createCellStyle();
-        CreationHelper createHelper = wb.getCreationHelper();
-
         //write data
         logger.info("writing data to workbook");
+
+        SimpleDateFormat format;
+        Map<String, SimpleDateFormat> formatCache = new HashMap<>();
+        String pattern;
 
         int rowNum = 1;
         Object value;
@@ -191,9 +194,13 @@ public class ExcelUtil {
                 value = getFiledValue(fields.get(j), t);
                 cell = row.createCell(j);
                 if (value instanceof Date) {
-                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat(dateFormats.get(j)));
-                    cell.setCellValue((Date) value);
-                    cell.setCellStyle(cellStyle);
+                    pattern = dateFormats.get(j);
+                    format = formatCache.get(pattern);
+                    if (format == null ) {
+                        format = new SimpleDateFormat(pattern);
+                        formatCache.put(pattern, format);
+                    }
+                    cell.setCellValue(format.format(value));
                 } else {
                     cell.setCellValue(value == null ? "" : value.toString());
                 }
@@ -201,6 +208,75 @@ public class ExcelUtil {
         }
 
         flush(fileName, wb, response);
+    }
+
+    /**
+     * 读取excel输入流，转成map对象的集合
+     * @param is excel输入流
+     * @param fields 属性数组，按照标题顺序作为map的key
+     * @return
+     * @throws Exception
+     */
+    public static List<Map<String, Object>> read(InputStream is, String[] fields) throws Exception {
+
+        List<Map<String, Object>> list = new ArrayList<>();
+
+        Workbook wb = new HSSFWorkbook(is);
+
+        Sheet sheet = wb.getSheetAt(0);
+
+        int rowSize = sheet.getPhysicalNumberOfRows();
+
+        Row row;
+        int cellSize;
+        Map<String, Object> map;
+        for (int i = 1; i < rowSize; i++){
+            row = sheet.getRow(i);
+
+            cellSize = row.getPhysicalNumberOfCells();
+            map = new HashMap<>();
+            for (int j = 0; j < cellSize; j++){
+                map.put(fields[j], getCellValue(row.getCell(j)));
+            }
+
+            list.add(map);
+        }
+
+        return list;
+    }
+
+    /**
+     * 根据不同cell类型获取值
+     * @param cell
+     * @return
+     */
+    private static Object getCellValue(Cell cell){
+
+        CellType cellTypeEnum = cell.getCellTypeEnum();
+
+        Object value;
+
+        switch (cellTypeEnum){
+            case STRING:
+                value = cell.getStringCellValue();
+                break;
+            case BOOLEAN:
+                value = cell.getBooleanCellValue();
+                break;
+
+            case FORMULA:
+                value = cell.getStringCellValue();
+                break;
+
+            case NUMERIC:
+                value = cell.getDateCellValue();
+                break;
+
+            default:
+                value = null;
+        }
+
+        return value;
     }
 
     /**
