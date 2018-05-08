@@ -2,6 +2,7 @@ package com.llf.demo.util;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -84,7 +85,7 @@ public class ExcelUtil {
         Assert.state(fields != null && fields.length > 0, "fields cannot be empty!");
 
         Workbook wb = new HSSFWorkbook();
-        Sheet sheet = wb.createSheet("sheet 1");
+        Sheet sheet = wb.createSheet(WorkbookUtil.createSafeSheetName("sheet 1"));
         sheet.setDefaultColumnWidth(20);
 
         //set titles
@@ -153,7 +154,7 @@ public class ExcelUtil {
         Assert.state(clazz != null && clazz != Map.class, "clazz cannot be empty and cannot be Map.class!");
 
         Workbook wb = new HSSFWorkbook();
-        Sheet sheet = wb.createSheet("sheet 1");
+        Sheet sheet = wb.createSheet(WorkbookUtil.createSafeSheetName("sheet 1"));
 
         Field[] declaredFields = clazz.getDeclaredFields();
         List<String> fields = new ArrayList<>();
