@@ -2,8 +2,11 @@ package com.llf.demo.service.impl;
 
 import com.llf.demo.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * @author: Oliver.li
@@ -16,6 +19,9 @@ public class RedisServiceImpl implements RedisService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     public boolean set(String key, String value) {
         stringRedisTemplate.boundValueOps(key).set(value);
@@ -25,5 +31,27 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public String get(String key) {
         return stringRedisTemplate.boundValueOps(key).get();
+    }
+
+    @Override
+    public boolean mset(String key, String field, String value) {
+        redisTemplate.boundHashOps(key).put(field, value);
+        return true;
+    }
+
+    @Override
+    public boolean msetAll(String key, Map<String, Object> map) {
+        redisTemplate.boundHashOps(key).putAll(map);
+        return true;
+    }
+
+    @Override
+    public Object mget(String key, String field) {
+        return redisTemplate.boundHashOps(key).get(field);
+    }
+
+    @Override
+    public Map<String, Object> mgetAll(String key) {
+        return redisTemplate.boundHashOps(key).entries();
     }
 }

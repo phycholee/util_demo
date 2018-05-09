@@ -1,5 +1,7 @@
 package com.llf.demo.service;
 
+import java.util.Map;
+
 /**
  * @author: Oliver.li
  * @Description:
@@ -11,4 +13,11 @@ public interface RedisService {
 
     String get(String key);
 
+    boolean mset(String key, String field, String value);
+
+    boolean msetAll(String key, Map<String, Object> map);
+
+    Object mget(String key, String field);
+
+    Map<String, Object> mgetAll(String key);
 }
