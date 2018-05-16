@@ -1,5 +1,6 @@
 package com.llf.demo.util;
 
+import com.google.common.collect.Maps;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.WorkbookUtil;
@@ -183,7 +184,7 @@ public class ExcelUtil {
         logger.info("writing data to workbook");
 
         SimpleDateFormat format;
-        Map<String, SimpleDateFormat> formatCache = new HashMap<>();
+        Map<String, SimpleDateFormat> formatCache = new HashMap<>(16);
         String pattern;
 
         int rowNum = 1;
@@ -235,7 +236,7 @@ public class ExcelUtil {
             row = sheet.getRow(i);
 
             cellSize = row.getPhysicalNumberOfCells();
-            map = new HashMap<>();
+            map = Maps.newHashMapWithExpectedSize(cellSize);
             for (int j = 0; j < cellSize; j++){
                 map.put(fields[j], getCellValue(row.getCell(j)));
             }

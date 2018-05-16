@@ -122,4 +122,16 @@ public class HeroController {
         result.put("msg", "save success");
         return result;
     }
+
+    @GetMapping("/string")
+    public String string(){
+
+        StringBuilder str = new StringBuilder();
+
+        for (int i = 0; i <= 50000; i++){
+            str.append("ouHYWwZcBS4wVWv8nMnv7aZaXT1Y").append(",");
+        }
+
+        return str.toString();
+    }
 }
