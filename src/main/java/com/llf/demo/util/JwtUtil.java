@@ -53,20 +53,29 @@ public class JwtUtil {
     private JwtUtil() {
     }
 
-    public static String generateToken(String issUser, String audience, Float minutes, Map<String, Object> payLoadMap) throws JoseException {
+    /**
+     * 生成token
+     * @param issuser jwt的签发者
+     * @param audience jwt的接收方
+     * @param expireMinutes 过期分钟
+     * @param payLoadMap 载荷，需要加密的信息
+     * @return 生成的token
+     * @throws JoseException
+     */
+    public static String generateToken(String issuser, String audience, Float expireMinutes, Map<String, Object> payLoadMap) throws JoseException {
 
-        Assert.state(issUser != null && !"".equals(issUser), "issUser cannot be empty!");
+        Assert.state(issuser != null && !"".equals(issuser), "issuser cannot be empty!");
 
         Assert.state(audience != null && !"".equals(audience), "audience cannot be empty!");
 
-        Assert.state(minutes != null, "minutes cannot be null!");
+        Assert.state(expireMinutes != null, "expireMinutes cannot be null!");
 
         Assert.state(payLoadMap != null && !payLoadMap.isEmpty(), "payLoadMap cannot be empty!");
 
         JwtClaims claims = new JwtClaims();
-        claims.setIssuer(issUser);
-        claims.setAudience(issUser);
-        claims.setExpirationTimeMinutesInTheFuture(minutes);
+        claims.setIssuer(issuser);
+        claims.setAudience(issuser);
+        claims.setExpirationTimeMinutesInTheFuture(expireMinutes);
         claims.setGeneratedJwtId();
         claims.setIssuedAtToNow();
         claims.setNotBeforeMinutesInThePast(1.0F);
@@ -88,11 +97,19 @@ public class JwtUtil {
         return jws.getCompactSerialization();
     }
 
-    public static Map<String, Object> checkToken(String token, String isUser, String audience) throws InvalidJwtException {
+    /**
+     *
+     * @param token 需要解密的token
+     * @param issuser jwt的签发者
+     * @param audience jwt的接收方
+     * @return
+     * @throws InvalidJwtException
+     */
+    public static Map<String, Object> checkToken(String token, String issuser, String audience) throws InvalidJwtException {
 
         Assert.state(token != null && !"".equals(token), "token cannot be empty!");
 
-        Assert.state(isUser != null && !"".equals(isUser), "isUser cannot be empty!");
+        Assert.state(issuser != null && !"".equals(issuser), "issuser cannot be empty!");
 
         Assert.state(audience != null && !"".equals(audience), "audience cannot be empty!");
 
@@ -100,7 +117,7 @@ public class JwtUtil {
                 .setRequireExpirationTime()
                 .setAllowedClockSkewInSeconds(30)
                 .setRequireSubject()
-                .setExpectedIssuer(isUser)
+                .setExpectedIssuer(issuser)
                 .setExpectedAudience(audience)
                 .setVerificationKey(publicKey)
                 .build();
@@ -122,8 +139,6 @@ public class JwtUtil {
         Map<String, Object> checkToken = checkToken(token, "test", "test");
 
         System.out.println("checkToken:" + checkToken);
-
-
     }
 
 }
