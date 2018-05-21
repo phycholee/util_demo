@@ -1,4 +1,4 @@
-package com.llf.demo.controller;
+package com.llf.demo.module.example.controller;
 
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;

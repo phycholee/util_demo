@@ -1,6 +1,6 @@
-package com.llf.demo.service.impl;
+package com.llf.demo.module.redis.service.impl;
 
-import com.llf.demo.service.RedisService;
+import com.llf.demo.module.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;

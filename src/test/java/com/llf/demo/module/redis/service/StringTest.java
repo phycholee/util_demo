@@ -1,4 +1,4 @@
-package com.llf.demo.service;
+package com.llf.demo.module.redis.service;
 
 import org.junit.Test;
 

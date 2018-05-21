@@ -1,6 +1,6 @@
-package com.llf.demo.controller;
+package com.llf.demo.module.example.controller;
 
-import com.llf.demo.controller.dto.ActivityRespDto;
+import com.llf.demo.module.example.dto.ActivityRespDto;
 import com.llf.demo.util.ExcelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

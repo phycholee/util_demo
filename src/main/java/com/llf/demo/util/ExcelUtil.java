@@ -95,10 +95,6 @@ public class ExcelUtil {
             row.createCell(i).setCellValue(titles[i]);
         }
 
-//        CellStyle cellStyle = wb.createCellStyle();
-//        CreationHelper createHelper = wb.getCreationHelper();
-//        cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm:ss"));
-
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         //write data
@@ -293,12 +289,16 @@ public class ExcelUtil {
         Cell cell = row.createCell(column);
         cell.setCellValue(obj.toString());
 
+        CellStyle cellStyle = wb.createCellStyle();
+        CreationHelper createHelper = wb.getCreationHelper();
+        cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm:ss"));
+
         if (halign != null || valign != null) {
-            CellStyle cellStyle = wb.createCellStyle();
             cellStyle.setAlignment(halign);
             cellStyle.setVerticalAlignment(valign);
-            cell.setCellStyle(cellStyle);
         }
+
+        cell.setCellStyle(cellStyle);
     }
 
     /**

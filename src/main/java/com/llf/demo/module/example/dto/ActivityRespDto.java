@@ -1,4 +1,4 @@
-package com.llf.demo.controller.dto;
+package com.llf.demo.module.example.dto;
 
 import com.llf.demo.util.ExcelColumn;
 

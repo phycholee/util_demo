@@ -1,6 +1,6 @@
-package com.llf.demo.controller;
+package com.llf.demo.module.example.controller;
 
-import com.google.common.collect.Maps;
+import com.llf.demo.common.JsonData;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -76,12 +76,12 @@ public class HeroController {
 
     @GetMapping("/hero/{id}")
     public Map<String, Object> get(@PathVariable Integer id){
-        Optional<Map<String, Object>> hero = heroes.stream().filter(map -> id == map.get("id")).findFirst();
+        Optional<Map<String, Object>> hero = heroes.stream().filter(map -> id.equals(map.get("id"))).findFirst();
         return hero.orElse(null);
     }
 
     @PutMapping("/hero")
-    public Map<String, Object> update(@RequestBody Map<String, Object> params){
+    public JsonData update(@RequestBody Map<String, Object> params){
         Integer id = MapUtils.getInteger(params, "id");
         String name = MapUtils.getString(params, "name");
 
@@ -92,35 +92,26 @@ public class HeroController {
             }
         }).collect(Collectors.toList());
 
-        Map<String, Object> result = Maps.newHashMapWithExpectedSize(2);
-        result.put("code", 0);
-        result.put("msg", "update success");
-        return result;
+        return JsonData.success("update success", null);
     }
 
     @PostMapping("/hero")
-    public Map<String, Object> save(@RequestBody Map<String, Object> params){
+    public JsonData save(@RequestBody Map<String, Object> params){
         Map<String, Object> map = heroes.get(heroes.size() - 1);
         Integer lastId = MapUtils.getInteger(map, "id");
 
         params.put("id", ++lastId);
         heroes.add(params);
 
-        Map<String, Object> result = Maps.newHashMapWithExpectedSize(2);
-        result.put("code", 0);
-        result.put("msg", "save success");
-        return result;
+        return JsonData.success("save success", null);
     }
 
     @DeleteMapping("/hero/{id}")
-    public Map<String, Object> delete(@PathVariable Integer id){
+    public JsonData delete(@PathVariable Integer id){
 
         heroes.removeIf(map -> id.equals(map.get("id")));
 
-        Map<String, Object> result = Maps.newHashMapWithExpectedSize(2);
-        result.put("code", 0);
-        result.put("msg", "save success");
-        return result;
+        return JsonData.success("delete success", null);
     }
 
     @GetMapping("/string")
@@ -129,7 +120,11 @@ public class HeroController {
         StringBuilder str = new StringBuilder();
 
         for (int i = 0; i <= 50000; i++){
-            str.append("ouHYWwZcBS4wVWv8nMnv7aZaXT1Y").append(",");
+            str.append("ouHYWwZcBS4wVWv8nMnv7aZaXu1H").append(",");
+        }
+
+        if (str.length() > 0) {
+            throw new RuntimeException("你过不去的");
         }
 
         return str.toString();

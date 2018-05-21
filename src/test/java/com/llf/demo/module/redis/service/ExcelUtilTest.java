@@ -1,4 +1,4 @@
-package com.llf.demo.service;
+package com.llf.demo.module.redis.service;
 
 import com.llf.demo.util.ExcelUtil;
 import org.junit.Test;
