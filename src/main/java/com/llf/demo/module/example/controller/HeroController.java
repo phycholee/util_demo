@@ -1,6 +1,8 @@
 package com.llf.demo.module.example.controller;
 
 import com.llf.demo.common.JsonData;
+import com.llf.demo.common.PageParam;
+import com.llf.demo.common.PagerJsonData;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -65,13 +67,17 @@ public class HeroController {
     }
 
     @GetMapping("/hero")
-    public List<Map<String, Object>> list(String name){
+    public JsonData list(String name, PageParam pageParam){
+
+        List<Map<String, Object>> list;
 
         if (!StringUtils.isEmpty(name)){
-            return heroes.stream().filter(map -> MapUtils.getString(map, "name").contains(name)).collect(Collectors.toList());
+            list = heroes.stream().filter(map -> MapUtils.getString(map, "name").contains(name)).collect(Collectors.toList());
+        } else {
+            list = heroes;
         }
 
-        return heroes;
+        return PagerJsonData.page(pageParam.getPage(), pageParam.getPageSize(), list.size(), list);
     }
 
     @GetMapping("/hero/{id}")

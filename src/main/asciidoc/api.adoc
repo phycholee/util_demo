@@ -1,0 +1,53 @@
+= Spring REST Docs API 文档 Demo
+作者 <phycholee>
+v1.0, 2018-05-23
+:toc: left
+:toclevels: 3
+:toc-title: 目  录
+:doctype: book
+:icons: font
+:operation-curl-request-title: Curl 请求
+:operation-httpie-request-title: HTTPie 请求
+:operation-http-request-title: Http 请求
+:operation-request-parameters-title: 请求参数说明
+:operation-request-fields-title: 请求参数说明
+:operation-http-response-title: Http 响应
+:operation-response-fields-title: Http 响应字段说明
+:operation-links-title: 相关链接
+
+[[overview]]
+== 1、概要
+
+API的说明包括：请求方式、请求地址、请求参数说明和响应消息等。
+
+[[overview-response]]
+== 2、通用说明
+
+*RESTFul API 通用响应消息说明*
+
+|===
+| 字段 | 类型 | 解释
+
+| code
+| int
+| 状态（0：成功；-1：请求错误；-2：系统错误）
+
+| msg
+| String
+| 消息
+
+| data
+| Object
+| 响应数据
+|===
+
+[[resources]]
+== 3、RESTFul API
+
+[[resources-user]]
+=== 3.1、Hero
+
+[[resources-hero-index]]
+==== 3.1.1、Hero 列表
+
+operation::hero-list[snippets='curl-request,httpie-request,http-request,request-parameters,http-response,response-fields']

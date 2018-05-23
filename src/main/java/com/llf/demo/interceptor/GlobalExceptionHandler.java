@@ -21,6 +21,6 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public JsonData handleException(Exception e){
         logger.error(e.getMessage(), e);
-        return JsonData.fail(e.getMessage(), null);
+        return JsonData.error(e.getMessage(), null);
     }
 }
