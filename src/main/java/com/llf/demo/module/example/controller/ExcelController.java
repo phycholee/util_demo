@@ -1,5 +1,6 @@
 package com.llf.demo.module.example.controller;
 
+import com.llf.demo.common.JsonData;
 import com.llf.demo.module.example.dto.ActivityRespDto;
 import com.llf.demo.util.ExcelUtil;
 import org.slf4j.Logger;
@@ -99,4 +100,15 @@ public class ExcelController {
         logger.info("export3 spend time: " + (endTime - startTime));
     }
 
+    @GetMapping("/activity")
+    public JsonData getActivity(HttpServletRequest request){
+        ActivityRespDto dto = new ActivityRespDto();
+        dto.setActivityId("1");
+        dto.setActivityName("我是谁");
+        dto.setActivityType("WHO");
+        dto.setStartTime(new Date());
+        dto.setEndTime(new Date());
+
+        return JsonData.success(dto);
+    }
 }
