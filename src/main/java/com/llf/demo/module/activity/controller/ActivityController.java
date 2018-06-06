@@ -1,6 +1,9 @@
 package com.llf.demo.module.activity.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.llf.demo.common.JsonData;
+import com.llf.demo.common.PageParam;
+import com.llf.demo.common.PagerJsonData;
 import com.llf.demo.module.activity.model.Activity;
 import com.llf.demo.module.activity.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,4 +32,11 @@ public class ActivityController {
         return JsonData.success(activity);
     }
 
+    @GetMapping("/list")
+    public JsonData list(PageParam pageParam){
+
+        PageInfo<Activity> page = activityService.page(pageParam);
+
+        return PagerJsonData.page(page.getPageNum(), page.getPageSize(), page.getTotal(), page.getList());
+    }
 }

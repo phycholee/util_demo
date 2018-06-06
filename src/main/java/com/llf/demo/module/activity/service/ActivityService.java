@@ -1,5 +1,7 @@
 package com.llf.demo.module.activity.service;
 
+import com.github.pagehelper.PageInfo;
+import com.llf.demo.common.PageParam;
 import com.llf.demo.module.activity.model.Activity;
 
 /**
@@ -10,5 +12,7 @@ import com.llf.demo.module.activity.model.Activity;
 public interface ActivityService {
 
     Activity get(Integer id);
+
+    PageInfo<Activity> page(PageParam pageParam);
 
 }
