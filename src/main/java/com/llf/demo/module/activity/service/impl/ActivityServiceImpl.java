@@ -7,6 +7,9 @@ import com.llf.demo.module.activity.mapper.ActivityMapper;
 import com.llf.demo.module.activity.model.Activity;
 import com.llf.demo.module.activity.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +26,27 @@ public class ActivityServiceImpl implements ActivityService {
     private ActivityMapper activityMapper;
 
     @Override
+    @Cacheable("activity")
     public Activity get(Integer id) {
         return activityMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    @CachePut("activity")
+    public int save(Activity activity) {
+        return activityMapper.insertSelective(activity);
+    }
+
+    @Override
+    @CachePut("activity")
+    public int update(Activity activity) {
+        return activityMapper.updateByPrimaryKeySelective(activity);
+    }
+
+    @Override
+    @CacheEvict("activity")
+    public int delete(Integer id) {
+        return activityMapper.deleteByPrimaryKey(id);
     }
 
     @Override

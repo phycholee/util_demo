@@ -1,8 +1,15 @@
 package com.llf.demo.module.activity.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Activity {
+/**
+ * @author: Oliver.li
+ * @Description: 活动
+ * @date: 2018/6/12 13:55
+ */
+public class Activity implements Serializable {
+
     private Integer id;
 
     private String name;
