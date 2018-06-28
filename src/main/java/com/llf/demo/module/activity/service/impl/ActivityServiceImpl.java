@@ -6,6 +6,7 @@ import com.llf.demo.common.PageParam;
 import com.llf.demo.module.activity.mapper.ActivityMapper;
 import com.llf.demo.module.activity.model.Activity;
 import com.llf.demo.module.activity.service.ActivityService;
+import com.llf.demo.module.redis.service.RedisLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -56,5 +57,24 @@ public class ActivityServiceImpl implements ActivityService {
         List<Activity> list = activityMapper.selectByExample(null);
 
         return new PageInfo<>(list);
+    }
+
+    @Override
+    public Activity lockGet(Integer id) {
+        String key = String.format("ACTIVITY_LOCK_%s", id);
+
+        RedisLock lock = new RedisLock(key);
+
+        try {
+            if (lock.lock()){
+                return activityMapper.selectByPrimaryKey(id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+
+        return null;
     }
 }

@@ -21,4 +21,5 @@ public interface ActivityService {
 
     PageInfo<Activity> page(PageParam pageParam);
 
+    Activity lockGet(Integer id);
 }

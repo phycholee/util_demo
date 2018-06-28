@@ -39,4 +39,12 @@ public class ActivityController {
 
         return PagerJsonData.page(page.getPageNum(), page.getPageSize(), page.getTotal(), page.getList());
     }
+
+    @GetMapping("lockGet/{id}")
+    public JsonData lockGet(@PathVariable Integer id){
+
+        Activity activity = activityService.lockGet(id);
+
+        return JsonData.success(activity);
+    }
 }
