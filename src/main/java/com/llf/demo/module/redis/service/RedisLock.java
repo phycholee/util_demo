@@ -28,7 +28,7 @@ public class RedisLock {
     /**
      * 默认锁的有效时间(s)
      */
-    public static final int EXPIRE_TIME_MINUTE = 10;
+    public static final int EXPIRE_TIME_SECOND = 10;
 
     /**
      * 解锁的lua脚本
@@ -60,7 +60,7 @@ public class RedisLock {
     /**
      * 锁的有效时间(s)
      */
-    private int expireTime = EXPIRE_TIME_MINUTE;
+    private int expireTime = EXPIRE_TIME_SECOND;
 
     /**
      * 请求锁的超时时间(ms)
@@ -120,7 +120,7 @@ public class RedisLock {
      * 尝试获取锁，超时返回失败
      * @return
      */
-    public boolean tryLock() throws Exception {
+    public boolean tryLock() {
         long timeout = timeOut * 1000000;
 
         long nowtime = System.nanoTime();
@@ -142,7 +142,7 @@ public class RedisLock {
      * 获取锁，失败直接返回
      * @return
      */
-    public boolean lock() throws Exception{
+    public boolean lock() {
         locked = this.set(lockKey, lockValue, expireTime);
         return locked;
     }
@@ -151,7 +151,7 @@ public class RedisLock {
      * 阻塞获取锁
      * @return
      */
-    public boolean blockingLock() throws Exception{
+    public boolean blockingLock() {
         while (true){
             if (this.set(lockKey, lockValue, expireTime)){
                 locked = true;
@@ -169,8 +169,6 @@ public class RedisLock {
      * @return
      */
     public boolean unlock(){
-
-
         if (locked){
             Boolean result =  redisTemplate.getConnectionFactory().getConnection().eval(UNLOCK_LUA.getBytes(), ReturnType.BOOLEAN, 1, lockKey.getBytes(), lockValue.getBytes());
 
@@ -196,6 +194,7 @@ public class RedisLock {
      */
     private Boolean set(String key, String value, long expireTime){
         Boolean result = redisTemplate.getConnectionFactory().getConnection().set(key.getBytes(), value.getBytes(), Expiration.seconds(expireTime), RedisStringCommands.SetOption.SET_IF_ABSENT);
+
         if (result){
             logger.info("Redis分布式锁，获取锁{}成功", lockKey);
         } else {
