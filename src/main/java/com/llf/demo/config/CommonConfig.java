@@ -1,13 +1,15 @@
 package com.llf.demo.config;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson.parser.ParserConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import java.time.Duration;
 
 /**
  * @author: Oliver.li
@@ -24,21 +26,41 @@ public class CommonConfig {
      */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+//        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+//        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+//        serializer.setObjectMapper(objectMapper);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        com.alibaba.fastjson.support.spring.FastJsonRedisSerializer<Object> fastJsonRedisSerializer =
+                new com.alibaba.fastjson.support.spring.FastJsonRedisSerializer<>(Object.class);
 
-        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
-        template.setKeySerializer(jackson2JsonRedisSerializer);
-        template.setValueSerializer(jackson2JsonRedisSerializer);
-        template.setHashKeySerializer(jackson2JsonRedisSerializer);
-        template.setHashValueSerializer(jackson2JsonRedisSerializer);
+        template.setKeySerializer(stringRedisSerializer);
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(fastJsonRedisSerializer);
+        template.setHashValueSerializer(fastJsonRedisSerializer);
         template.afterPropertiesSet();
         return template;
     }
 
+    /**
+     * 设置 @Cacheable 序列化方式
+     * 设置过期时间为1天
+     * @return
+     */
+    @Bean
+    public RedisCacheConfiguration redisCacheConfiguration(){
+        FastJsonRedisSerializer<Object> serializer = new FastJsonRedisSerializer<>(Object.class);
+        ParserConfig parserConfig = ParserConfig.getGlobalInstance();
+        parserConfig.addAccept("com.llf.demo.");
+        parserConfig.addAccept("com.github.pagehelper.");
+
+        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
+        configuration = configuration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer)).entryTtl(Duration.ofDays(1));
+        return configuration;
+    }
 }

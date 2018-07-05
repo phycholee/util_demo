@@ -51,6 +51,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    @Cacheable("activitys")
     public PageInfo<Activity> page(PageParam pageParam) {
         PageHelper.startPage(pageParam.getPage(), pageParam.getPageSize());
 
