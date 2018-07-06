@@ -7,10 +7,7 @@ import com.llf.demo.common.PagerJsonData;
 import com.llf.demo.module.activity.model.Activity;
 import com.llf.demo.module.activity.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author: Oliver.li
@@ -30,6 +27,32 @@ public class ActivityController {
         Activity activity = activityService.get(id);
 
         return JsonData.success(activity);
+    }
+
+    @PostMapping("")
+    public JsonData save(@RequestBody Activity activity){
+
+        activityService.save(activity);
+
+        return JsonData.success(activity);
+    }
+
+    @PutMapping("")
+    public JsonData update(@RequestBody Activity activity){
+        if (activity.getId() == null){
+            return JsonData.fail("参数错误", null);
+        }
+
+        activityService.update(activity);
+
+        return JsonData.success(activity);
+    }
+
+    @DeleteMapping("/{id}")
+    public JsonData delete(@PathVariable Integer id){
+
+        activityService.delete(id);
+        return JsonData.success();
     }
 
     @GetMapping("/list")

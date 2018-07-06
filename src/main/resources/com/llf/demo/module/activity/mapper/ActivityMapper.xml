@@ -100,7 +100,7 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.llf.demo.module.activity.model.Activity">
+  <insert id="insert" parameterType="com.llf.demo.module.activity.model.Activity" keyProperty="id" useGeneratedKeys="true">
     insert into activity (id, name, type, 
       start_time, end_time, description
       )
@@ -108,7 +108,7 @@
       #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{description,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.llf.demo.module.activity.model.Activity">
+  <insert id="insertSelective" parameterType="com.llf.demo.module.activity.model.Activity" keyProperty="id" useGeneratedKeys="true">
     insert into activity
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">

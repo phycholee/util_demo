@@ -13,9 +13,9 @@ public interface ActivityService {
 
     Activity get(Integer id);
 
-    int save(Activity activity);
+    Activity save(Activity activity);
 
-    int update(Activity activity);
+    Activity update(Activity activity);
 
     int delete(Integer id);
 

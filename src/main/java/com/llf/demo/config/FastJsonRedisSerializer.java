@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
 
 /**
  * @author: Oliver.li
- * @Description:
+ * @Description: 重写FastJsonRedisSerializer，能够反序列化为正确的Java类型
  * @date: 2018/7/5 16:10
  */
 public class FastJsonRedisSerializer<T> implements RedisSerializer<T> {

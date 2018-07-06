@@ -1,5 +1,6 @@
 package com.llf.demo.module.activity.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.llf.demo.common.PageParam;
@@ -7,11 +8,13 @@ import com.llf.demo.module.activity.mapper.ActivityMapper;
 import com.llf.demo.module.activity.model.Activity;
 import com.llf.demo.module.activity.service.ActivityService;
 import com.llf.demo.module.redis.service.RedisLock;
+import com.llf.demo.module.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -26,26 +29,37 @@ public class ActivityServiceImpl implements ActivityService {
     @Autowired
     private ActivityMapper activityMapper;
 
+    @Autowired
+    private RedisService redisService;
+
     @Override
-    @Cacheable("activity")
+    @Cacheable(value = "activity", key = "#id")
     public Activity get(Integer id) {
         return activityMapper.selectByPrimaryKey(id);
     }
 
     @Override
-    @CachePut("activity")
-    public int save(Activity activity) {
-        return activityMapper.insertSelective(activity);
+    @CacheEvict(value = "activity", key = "#activity.id")
+    public Activity save(Activity activity) {
+        int result = activityMapper.insertSelective(activity);
+        if (result > 0) {
+            return activity;
+        }
+        return null;
     }
 
     @Override
-    @CachePut("activity")
-    public int update(Activity activity) {
-        return activityMapper.updateByPrimaryKeySelective(activity);
+    @CacheEvict(value = "activity", key = "#activity.id")
+    public Activity update(Activity activity) {
+        int result = activityMapper.updateByPrimaryKeySelective(activity);
+        if (result > 0) {
+            return activity;
+        }
+        return null;
     }
 
     @Override
-    @CacheEvict("activity")
+    @CacheEvict(value = "activity", key = "#id")
     public int delete(Integer id) {
         return activityMapper.deleteByPrimaryKey(id);
     }

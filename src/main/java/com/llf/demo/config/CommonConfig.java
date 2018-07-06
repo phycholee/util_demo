@@ -20,9 +20,9 @@ import java.time.Duration;
 public class CommonConfig {
 
     /**
-     * @author: Oliver.li
-     * @Description: 设置redisTemplate序列化方式
-     * @date: 2018/6/26 10:42
+     * 设置redisTemplate序列化方式
+     * @param redisConnectionFactory
+     * @return
      */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
