@@ -47,8 +47,8 @@ public class JsonData {
         return fail(null);
     }
 
-    public static JsonData fail(Object data){
-        return fail(FAIL_MSG, data);
+    public static JsonData fail(String msg){
+        return fail(msg, null);
     }
 
     public static JsonData fail(String msg, Object data){
@@ -59,8 +59,8 @@ public class JsonData {
         return error(null);
     }
 
-    public static JsonData error(Object data){
-        return error(ERROR_MSG, data);
+    public static JsonData error(String msg){
+        return error(msg, null);
     }
 
     public static JsonData error(String msg, Object data){

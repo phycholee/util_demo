@@ -221,6 +221,6 @@ public class RedisLock {
      * 设置随机锁值
      */
     private void setLockValue(){
-        lockValue =  UUID.randomUUID().toString().replaceAll("-", "");
+        lockValue =  UUID.randomUUID().toString();
     }
 }

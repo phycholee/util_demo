@@ -1,5 +1,7 @@
 package com.llf.demo.module.activity.model;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,12 +14,16 @@ public class Activity implements Serializable {
 
     private Integer id;
 
+    @NotBlank(message = "活动名称不能为空")
     private String name;
 
+    @NotBlank(message = "活动类型不能为空")
     private String type;
 
+    @NotNull(message = "开始时间不能为空")
     private Date startTime;
 
+    @NotNull(message = "结束时间不能为空")
     private Date endTime;
 
     private String description;

@@ -17,7 +17,7 @@ import java.time.Duration;
  * @date: 2018/6/26 10:21
  */
 @Configuration
-public class CommonConfig {
+public class RedisConfig {
 
     /**
      * 设置redisTemplate序列化方式

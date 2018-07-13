@@ -7,7 +7,12 @@ import com.llf.demo.common.PagerJsonData;
 import com.llf.demo.module.activity.model.Activity;
 import com.llf.demo.module.activity.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author: Oliver.li
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/activity")
+@Validated
 public class ActivityController {
 
     @Autowired
@@ -30,15 +36,14 @@ public class ActivityController {
     }
 
     @PostMapping("")
-    public JsonData save(@RequestBody Activity activity){
-
+    public JsonData save(@RequestBody @Validated Activity activity){
         activityService.save(activity);
 
         return JsonData.success(activity);
     }
 
     @PutMapping("")
-    public JsonData update(@RequestBody Activity activity){
+    public JsonData update(@RequestBody @Validated Activity activity){
         if (activity.getId() == null){
             return JsonData.fail("参数错误", null);
         }
