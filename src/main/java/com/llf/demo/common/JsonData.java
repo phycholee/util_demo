@@ -44,7 +44,7 @@ public class JsonData {
     }
 
     public static JsonData fail(){
-        return fail(null);
+        return fail(FAIL_MSG);
     }
 
     public static JsonData fail(String msg){
@@ -56,7 +56,7 @@ public class JsonData {
     }
 
     public static JsonData error(){
-        return error(null);
+        return error(ERROR_MSG);
     }
 
     public static JsonData error(String msg){
