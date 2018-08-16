@@ -120,7 +120,8 @@ public class ExcelUtil {
                 }
             } else {
                 for (int i = 0, length = fields.length; i < length; i++) {
-                    value = getFiledValue(fields[i], t);
+//                    value = getFiledValue(fields[i], t);
+                    value = ReflectionUtil.invokeGetter(t, fields[i]);
                     cell = row.createCell(i);
                     if (value instanceof Date){
                         cell.setCellValue(format.format(value));
@@ -189,7 +190,8 @@ public class ExcelUtil {
         for (T t : data) {
             row = sheet.createRow(rowNum++);
             for (int j = 0, length = fields.size(); j < length; j++) {
-                value = getFiledValue(fields.get(j), t);
+//                value = getFiledValue(fields.get(j), t);
+                value = ReflectionUtil.invokeGetter(t, fields.get(j));
                 cell = row.createCell(j);
                 if (value instanceof Date) {
                     pattern = dateFormats.get(j);

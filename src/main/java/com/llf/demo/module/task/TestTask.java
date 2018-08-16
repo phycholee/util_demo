@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @Description: Spring定时器， @Async表示并行执行
  * @date: 2018/8/6 17:44
  */
-@Component
+//@Component
 public class TestTask {
 
     private final static Logger logger = LoggerFactory.getLogger(TestTask.class);
