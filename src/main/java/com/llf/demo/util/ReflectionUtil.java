@@ -21,10 +21,10 @@ public class ReflectionUtil {
 
     public static Object invokeGetter(Object obj, String fieldName){
         String methodGetterName = GETTER_PREFIX + StringUtils.capitalize(fieldName);
-        return InvokeMethod(obj, methodGetterName, new Class[]{}, new Object[]{});
+        return invokeMethod(obj, methodGetterName, new Class[]{}, new Object[]{});
     }
 
-    public static Object InvokeMethod(final Object obj, final String methodName, final Class<?>[] parameterTypes, final Object[] args){
+    public static Object invokeMethod(final Object obj, final String methodName, final Class<?>[] parameterTypes, final Object[] args){
         Method method = getAccessibleMethod(obj, methodName, parameterTypes);
         if (method == null){
             throw new IllegalArgumentException("Cannot find method [" + methodName + "] on target [" + obj + "]");
