@@ -1,6 +1,6 @@
 package com.llf.demo.module.example.dto;
 
-import com.llf.demo.util.ExcelColumn;
+import com.llf.demo.common.annotation.ExcelColumn;
 
 import java.util.Date;
 

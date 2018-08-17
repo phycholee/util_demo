@@ -1,4 +1,4 @@
-package com.llf.demo.util;
+package com.llf.demo.common.annotation;
 
 import java.lang.annotation.*;
 

@@ -1,8 +1,10 @@
 package com.llf.demo.module.example.controller;
 
 import com.llf.demo.common.JsonData;
+import com.llf.demo.common.annotation.RateLimit;
 import com.llf.demo.module.example.dto.ActivityRespDto;
 import com.llf.demo.util.ExcelUtil;
+import com.llf.demo.util.IpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -100,6 +102,7 @@ public class ExcelController {
         logger.info("export3 spend time: " + (endTime - startTime));
     }
 
+    @RateLimit(key = "test", second = 10, count = 3)
     @GetMapping("/activity")
     public JsonData getActivity(HttpServletRequest request){
         ActivityRespDto dto = new ActivityRespDto();
@@ -108,6 +111,8 @@ public class ExcelController {
         dto.setActivityType("WHO");
         dto.setStartTime(new Date());
         dto.setEndTime(new Date());
+
+        logger.info("IP: " + IpUtil.getIpAddr(request));
 
         return JsonData.success(dto);
     }

@@ -3,11 +3,14 @@ package com.llf.demo.config;
 import com.alibaba.fastjson.parser.ParserConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.scripting.support.ResourceScriptSource;
 
 import java.time.Duration;
 
@@ -62,5 +65,17 @@ public class RedisConfig {
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
         configuration = configuration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer)).entryTtl(Duration.ofDays(1));
         return configuration;
+    }
+
+    /**
+     * 分布式限流lua脚本
+     * @return
+     */
+    @Bean
+    public DefaultRedisScript<Number> rateLimitLua(){
+        DefaultRedisScript<Number> redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("rateLimit.lua")));
+        redisScript.setResultType(Number.class);
+        return redisScript;
     }
 }
