@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -36,11 +37,11 @@ public class HttpUtil {
         return get(url, null);
     }
 
-    public static JSONObject get(String url, Map<String, String> params) {
+    public static JSONObject get(String url, Map<String, Object> params) {
         return get(url, params, null);
     }
 
-    public static JSONObject get(String url, Map<String, String> params, Map<String, String> headers) {
+    public static JSONObject get(String url, Map<String, Object> params, Map<String, String> headers) {
         Assert.state(url != null && !"".equals(url), "url cannot be empty!");
 
         StringBuilder sb = new StringBuilder(url);
@@ -48,8 +49,8 @@ public class HttpUtil {
         if (params != null && params.size() > 0) {
             boolean firstTag = true;
 
-            Set<Map.Entry<String, String>> entries = params.entrySet();
-            for (Map.Entry<String, String> entry : entries){
+            Set<Map.Entry<String, Object>> entries = params.entrySet();
+            for (Map.Entry<String, Object> entry : entries){
                 if (firstTag){
                     sb.append("?").append(entry.getKey()).append("=").append(entry.getValue());
                     firstTag = false;
@@ -67,15 +68,15 @@ public class HttpUtil {
         return post(url, null);
     }
 
-    public static JSONObject post(String url, Map<String, String> params) {
+    public static JSONObject post(String url, Map<String, Object> params) {
         return post(url, params, null);
     }
 
-    public static JSONObject post(String url, Map<String, String> params, Map<String, String> headers) {
+    public static JSONObject post(String url, Map<String, Object> params, Map<String, String> headers) {
         return post(url, params, headers, false);
     }
 
-    public static JSONObject post(String url, Map<String, String> params, Map<String, String> headers, boolean requestBody) {
+    public static JSONObject post(String url, Map<String, Object> params, Map<String, String> headers, boolean requestBody) {
         String result = httpRequest(url, HttpMethod.POST, params, headers, requestBody);
         return JSON.parseObject(result, JSONObject.class);
     }
@@ -84,15 +85,15 @@ public class HttpUtil {
         return put(url, null);
     }
 
-    public static JSONObject put(String url, Map<String, String> params) {
+    public static JSONObject put(String url, Map<String, Object> params) {
         return put(url, params, null);
     }
 
-    public static JSONObject put(String url, Map<String, String> params, Map<String, String> headers) {
+    public static JSONObject put(String url, Map<String, Object> params, Map<String, String> headers) {
         return put(url, params, headers, false);
     }
 
-    public static JSONObject put(String url, Map<String, String> params, Map<String, String> headers, boolean requestBody) {
+    public static JSONObject put(String url, Map<String, Object> params, Map<String, String> headers, boolean requestBody) {
         String result = httpRequest(url, HttpMethod.PUT, params, headers, requestBody);
         return JSON.parseObject(result, JSONObject.class);
     }
@@ -101,11 +102,11 @@ public class HttpUtil {
         return delete(url, null);
     }
 
-    public static JSONObject delete(String url, Map<String, String> params) {
+    public static JSONObject delete(String url, Map<String, Object> params) {
         return delete(url, params, null);
     }
 
-    public static JSONObject delete(String url, Map<String, String> params, Map<String, String> headers) {
+    public static JSONObject delete(String url, Map<String, Object> params, Map<String, String> headers) {
         Assert.state(url != null && !"".equals(url), "url cannot be empty!");
 
         StringBuilder sb = new StringBuilder(url);
@@ -113,8 +114,8 @@ public class HttpUtil {
         if (params != null && params.size() > 0) {
             boolean firstTag = true;
 
-            Set<Map.Entry<String, String>> entries = params.entrySet();
-            for (Map.Entry<String, String> entry : entries){
+            Set<Map.Entry<String, Object>> entries = params.entrySet();
+            for (Map.Entry<String, Object> entry : entries){
                 if (firstTag){
                     sb.append("?").append(entry.getKey()).append("=").append(entry.getValue());
                     firstTag = false;
@@ -128,7 +129,7 @@ public class HttpUtil {
         return JSON.parseObject(result, JSONObject.class);
     }
 
-    private static String httpRequest(String url, HttpMethod method, Map<String, String> params, Map<String, String> headers, boolean requestBody) {
+    private static String httpRequest(String url, HttpMethod method, Map<String, Object> params, Map<String, String> headers, boolean requestBody) {
 
         Assert.state(url != null && !"".equals(url), "url cannot be empty!");
 
@@ -213,7 +214,7 @@ public class HttpUtil {
 
 
     public static void main(String[] args) {
-        Map<String, String> params = new HashMap<>(4);
+        Map<String, Object> params = new HashMap<>(4);
         params.put("name", "mjh");
 
         String url = "http://127.0.0.1:8080/hate/point";
