@@ -9,6 +9,7 @@ import com.llf.demo.module.activity.model.Activity;
 import com.llf.demo.module.activity.service.ActivityService;
 import com.llf.demo.module.redis.service.RedisLock;
 import com.llf.demo.module.redis.service.RedisService;
+import com.llf.demo.module.redis.service.RedissonLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -78,12 +79,12 @@ public class ActivityServiceImpl implements ActivityService {
     public Activity lockGet(Integer id) {
         String key = String.format("ACTIVITY_LOCK_%s", id);
 
-        RedisLock lock = new RedisLock(key);
+        RedissonLock lock = new RedissonLock(key);
 
+        lock.lock();
         try {
-            if (lock.lock()){
-                return activityMapper.selectByPrimaryKey(id);
-            }
+            Thread.sleep(10000);
+            return activityMapper.selectByPrimaryKey(id);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

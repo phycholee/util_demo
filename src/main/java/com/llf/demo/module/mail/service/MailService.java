@@ -29,4 +29,11 @@ public interface MailService {
      * @date: 2018/6/15 16:18
      */
     void sendTemplateMail(Mail mail);
+
+    /**
+      * @author: Oliver.li
+      * @Description: 发送附件邮件
+      * @date: 2018/12/3 10:18
+      */
+    void sendAttachmentsMail(Mail mail);
 }

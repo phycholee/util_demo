@@ -16,6 +16,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.mail.internet.MimeMessage;
 import java.io.File;
@@ -93,6 +96,34 @@ public class MailServiceImpl implements MailService {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    /**
+     * 发送附件
+     *
+     */
+    @Override
+    public void sendAttachmentsMail(Mail mail){
+        Assert.state(mail != null, "mail cannot be empty!");
+        Assert.state(!CollectionUtils.isEmpty(mail.getFileList()), "attach files cannot be empty!");
+
+        try{
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            helper.setFrom(from);
+            helper.setTo(mail.getTo());
+            helper.setSubject(mail.getSubject());
+            helper.setText(mail.getText());
+
+            for (File file : mail.getFileList()) {
+                helper.addAttachment(file.getName(), file);
+            }
+
+            mailSender.send(mimeMessage);
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+        }
+
     }
 
     private static Configuration getConfiguration() throws IOException {

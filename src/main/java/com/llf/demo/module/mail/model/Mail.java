@@ -1,7 +1,9 @@
 package com.llf.demo.module.mail.model;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +43,11 @@ public class Mail implements Serializable {
      * 选用哪个模板 发送模板邮件必填
      */
     private String templateName;
+
+    /**
+     * 附件
+     */
+    private List<File> fileList;
 
     public String[] getTo() {
         return to;
@@ -90,6 +97,14 @@ public class Mail implements Serializable {
         this.templateName = templateName;
     }
 
+    public List<File> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<File> fileList) {
+        this.fileList = fileList;
+    }
+
     @Override
     public String toString() {
         return "Mail{" +
@@ -99,6 +114,7 @@ public class Mail implements Serializable {
                 ", text='" + text + '\'' +
                 ", templateModel=" + templateModel +
                 ", templateName='" + templateName + '\'' +
+                ", fileList='" + fileList + '\'' +
                 '}';
     }
 }
