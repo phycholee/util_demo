@@ -40,19 +40,19 @@ public class RedissonLockTest {
 
         @Override
         public void run() {
-            RedissonLock redissonLock = new RedissonLock("REDISSON_LOCK_TEST");
-
-            try {
-                redissonLock.lock();
-
-                System.out.println("thread " + i + " doing something");
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                redissonLock.unlock();
-                System.out.println("thread " + i + " unlock");
-            }
+//            RedissonLock redissonLock = new RedissonLock("REDISSON_LOCK_TEST");
+//
+//            try {
+//                redissonLock.lock();
+//
+//                System.out.println("thread " + i + " doing something");
+//                Thread.sleep(1000);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            } finally {
+//                redissonLock.unlock();
+//                System.out.println("thread " + i + " unlock");
+//            }
 
 
         }

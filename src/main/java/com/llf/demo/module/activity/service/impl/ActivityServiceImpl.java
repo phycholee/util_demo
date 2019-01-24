@@ -1,6 +1,5 @@
 package com.llf.demo.module.activity.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.llf.demo.common.PageParam;
@@ -9,13 +8,10 @@ import com.llf.demo.module.activity.model.Activity;
 import com.llf.demo.module.activity.service.ActivityService;
 import com.llf.demo.module.redis.service.RedisLock;
 import com.llf.demo.module.redis.service.RedisService;
-import com.llf.demo.module.redis.service.RedissonLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -79,7 +75,7 @@ public class ActivityServiceImpl implements ActivityService {
     public Activity lockGet(Integer id) {
         String key = String.format("ACTIVITY_LOCK_%s", id);
 
-        RedissonLock lock = new RedissonLock(key);
+        RedisLock lock = new RedisLock(key);
 
         lock.lock();
         try {
