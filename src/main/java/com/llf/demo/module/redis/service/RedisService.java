@@ -20,4 +20,8 @@ public interface RedisService {
     Object mget(String key, String field);
 
     Map<String, Object> mgetAll(String key);
+
+    void lpush(String key, String value);
+
+    String rPop(String key);
 }

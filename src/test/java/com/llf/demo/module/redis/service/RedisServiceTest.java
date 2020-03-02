@@ -4,8 +4,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -22,9 +26,30 @@ public class RedisServiceTest {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    /**
+     * 1087584
+     */
+    @Test
+    public void testZset(){
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();
+
+        zSetOperations.add("ZSET_SORT", "aaaaa", 1);
+        zSetOperations.add("ZSET_SORT", "bbbbb", 2);
+        zSetOperations.add("ZSET_SORT", "ccccc", 3);
+
+        Set<String> zsetSort = zSetOperations.rangeByScore("ZSET_SORT", 0, 100);
+        System.out.println(zsetSort);
+    }
+
     @Test
     public void set() {
-        redisService.set("llf", "rage");
+//        redisService.set("llf", "rage");
+//
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        valueOperations.set("b", 9223372036854775807L);
     }
 
     @Test

@@ -5,6 +5,7 @@ import com.llf.demo.common.annotation.ExcelColumn;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -222,7 +223,7 @@ public class ExcelUtil {
 
         List<Map<String, Object>> list = new ArrayList<>();
 
-        Workbook wb = new HSSFWorkbook(is);
+        Workbook wb = new XSSFWorkbook(is);
 
         Sheet sheet = wb.getSheetAt(0);
 
@@ -270,7 +271,7 @@ public class ExcelUtil {
                 break;
 
             case NUMERIC:
-                value = cell.getDateCellValue();
+                value = cell.getNumericCellValue();
                 break;
 
             default:

@@ -54,4 +54,15 @@ public class RedisServiceImpl implements RedisService {
     public Map<String, Object> mgetAll(String key) {
         return redisTemplate.boundHashOps(key).entries();
     }
+
+    @Override
+    public void lpush(String key, String value) {
+        redisTemplate.boundListOps(key).leftPush(value);
+    }
+
+    @Override
+    public String rPop(String key) {
+        Object pop = redisTemplate.boundListOps(key).rightPop();
+        return pop != null ? pop.toString() : null;
+    }
 }
