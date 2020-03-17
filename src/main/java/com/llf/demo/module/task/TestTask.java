@@ -11,19 +11,17 @@ import org.springframework.stereotype.Component;
  * @Description: Spring定时器， @Async表示并行执行
  * @date: 2018/8/6 17:44
  */
-//@Component
+@Component
 public class TestTask {
 
     private final static Logger logger = LoggerFactory.getLogger(TestTask.class);
 
-    @Scheduled(cron = "0/1 * * * * ?")
-    @Async
-    public void task1() throws InterruptedException {
+    @Scheduled(cron = "0 0/2 * * * ?")
+    public void task1() {
         logger.info(Thread.currentThread().getName() + " | task1 ");
-        Thread.sleep(10000);
     }
 
-    @Scheduled(cron = "0/1 * * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     @Async
     public void task2(){
         logger.info(Thread.currentThread().getName() + " | task2 ");

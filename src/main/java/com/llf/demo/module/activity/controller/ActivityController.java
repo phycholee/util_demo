@@ -7,12 +7,8 @@ import com.llf.demo.common.PagerJsonData;
 import com.llf.demo.module.activity.model.Activity;
 import com.llf.demo.module.activity.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author: Oliver.li
