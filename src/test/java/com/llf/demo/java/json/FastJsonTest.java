@@ -1,4 +1,4 @@
-package com.llf.demo.json;
+package com.llf.demo.java.json;
 
 import com.alibaba.fastjson.JSON;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.llf.demo.other;
+package com.llf.demo.java.other;
 
 import com.google.common.util.concurrent.RateLimiter;
 import org.junit.Test;

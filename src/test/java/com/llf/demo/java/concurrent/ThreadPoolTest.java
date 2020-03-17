@@ -1,4 +1,4 @@
-package com.llf.demo;
+package com.llf.demo.java.concurrent;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;

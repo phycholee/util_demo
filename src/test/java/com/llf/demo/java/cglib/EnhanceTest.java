@@ -1,4 +1,4 @@
-package com.llf.demo.cglib;
+package com.llf.demo.java.cglib;
 
 import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.Enhancer;

@@ -1,13 +1,12 @@
-package com.llf.demo.json;
-
-import com.alibaba.fastjson.JSON;
+package com.llf.demo.java.pojo;
 
 /**
  * @author: Oliver.li
  * @Description:
- * @date: 2020/1/8 11:25
+ * @date: 2018/9/10 15:56
  */
-public class BravoDto {
+public class Parent {
+
 
     private Long id;
 
@@ -29,7 +28,11 @@ public class BravoDto {
         this.name = name;
     }
 
-    public String getJsonString(){
-        return JSON.toJSONString(this);
+    @Override
+    public String toString() {
+        return "Parent{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
