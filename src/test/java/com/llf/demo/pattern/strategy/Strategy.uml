@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.llf.demo.pattern.strategy.ConcreteStrategyA</OriginalElement>
+  <nodes>
+    <node x="0.0" y="197.0">com.llf.demo.pattern.strategy.Context</node>
+    <node x="186.0" y="101.0">com.llf.demo.pattern.strategy.ConcreteStrategyA</node>
+    <node x="372.0" y="101.0">com.llf.demo.pattern.strategy.ConcreteStrategyB</node>
+    <node x="0.0" y="101.0">com.llf.demo.pattern.strategy.ConcreteStrategyC</node>
+    <node x="186.0" y="0.0">com.llf.demo.pattern.strategy.Strategy</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.llf.demo.pattern.strategy.ConcreteStrategyA" target="com.llf.demo.pattern.strategy.Strategy">
+      <point x="0.0" y="-25.5" />
+      <point x="0.0" y="25.5" />
+    </edge>
+    <edge source="com.llf.demo.pattern.strategy.ConcreteStrategyC" target="com.llf.demo.pattern.strategy.Strategy">
+      <point x="0.0" y="-25.5" />
+      <point x="83.0" y="76.0" />
+      <point x="213.66666666666666" y="76.0" />
+      <point x="-55.33333333333334" y="25.5" />
+    </edge>
+    <edge source="com.llf.demo.pattern.strategy.ConcreteStrategyB" target="com.llf.demo.pattern.strategy.Strategy">
+      <point x="0.0" y="-25.5" />
+      <point x="455.0" y="76.0" />
+      <point x="324.33333333333337" y="76.0" />
+      <point x="55.33333333333337" y="25.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="83.0" y="219.0" />
+  <SelectedNodes>
+    <node>com.llf.demo.pattern.strategy.ConcreteStrategyC</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.llf.demo.pattern.decorator.ConcreteDecoratorB</OriginalElement>
+  <nodes>
+    <node x="228.75" y="0.0">com.llf.demo.pattern.decorator.Component</node>
+    <node x="0.0" y="235.0">com.llf.demo.pattern.decorator.ConcreteDecoratorA</node>
+    <node x="194.0" y="224.0">com.llf.demo.pattern.decorator.ConcreteDecoratorB</node>
+    <node x="55.0" y="101.0">com.llf.demo.pattern.decorator.Decorator</node>
+    <node x="346.0" y="112.0">com.llf.demo.pattern.decorator.ConcreteComponent</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.llf.demo.pattern.decorator.ConcreteDecoratorB" target="com.llf.demo.pattern.decorator.Decorator">
+      <point x="0.0" y="-36.5" />
+      <point x="294.0" y="199.0" />
+      <point x="258.25" y="199.0" />
+      <point x="67.75" y="36.5" />
+    </edge>
+    <edge source="com.llf.demo.pattern.decorator.ConcreteComponent" target="com.llf.demo.pattern.decorator.Component">
+      <point x="0.0" y="-25.5" />
+      <point x="434.0" y="76.0" />
+      <point x="354.0" y="76.0" />
+      <point x="41.75" y="25.5" />
+    </edge>
+    <edge source="com.llf.demo.pattern.decorator.ConcreteDecoratorA" target="com.llf.demo.pattern.decorator.Decorator">
+      <point x="0.0" y="-25.5" />
+      <point x="87.0" y="199.0" />
+      <point x="122.75" y="199.0" />
+      <point x="-67.75" y="36.5" />
+    </edge>
+    <edge source="com.llf.demo.pattern.decorator.Decorator" target="com.llf.demo.pattern.decorator.Component">
+      <point x="0.0" y="-36.5" />
+      <point x="190.5" y="76.0" />
+      <point x="270.5" y="76.0" />
+      <point x="-41.75" y="25.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="57.0" y="93.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
