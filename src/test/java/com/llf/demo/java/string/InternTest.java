@@ -18,7 +18,7 @@ public class InternTest {
 //        System.out.println(bar);
 
 
-        test2();
+        test1();
 
     }
 
