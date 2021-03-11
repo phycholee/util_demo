@@ -1,6 +1,8 @@
 package com.llf.demo.java.leetcode;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * @author: Oliver.li
@@ -33,8 +35,29 @@ public class LongestSubString {
         return len;
     }
 
+    public int lengthOfLongestSubstring2(String s){
+
+        char[] chars = s.toCharArray();
+
+        int max = 0;
+        int left = 0;
+
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < chars.length; i++){
+            char c = chars[i];
+
+            if (map.containsKey(c)){
+                left = Math.max(left, map.get(c) + 1);
+            }
+
+            map.put(c, i);
+            max = Math.max(max, i - left + 1);
+        }
+        return max;
+    }
+
     public static void main(String[] args) {
-        int len = new LongestSubString().lengthOfLongestSubstring("pwwkew");
+        int len = new LongestSubString().lengthOfLongestSubstring2("pwwkew");
         System.out.println(len);
     }
 
