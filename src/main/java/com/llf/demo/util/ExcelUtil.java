@@ -271,7 +271,8 @@ public class ExcelUtil {
                 break;
 
             case NUMERIC:
-                value = cell.getNumericCellValue();
+                cell.setCellType(CellType.STRING);
+                value = cell.getStringCellValue() + "";
                 break;
 
             default:
