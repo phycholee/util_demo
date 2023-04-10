@@ -27,6 +27,7 @@ public class TwoSum {
             if (j != null){
                 result[0] = j;
                 result[1] = i;
+                break;
             }
 
             //把自己和下标塞进map，不存在值的时候
@@ -42,8 +43,6 @@ public class TwoSum {
         int target = 28;
         int[] sum = new TwoSum().twoSum(nums, target);
         System.out.println(Arrays.toString(sum));
-
-        System.out.println(nums[633]);
     }
 
 
