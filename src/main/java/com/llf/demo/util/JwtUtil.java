@@ -11,14 +11,16 @@ import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
-import sun.misc.BASE64Decoder;
 
 import java.io.File;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.*;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author: Oliver.li
@@ -35,12 +37,12 @@ public class JwtUtil {
     static {
         try {
             Configuration configuration = (new Configurations()).properties(new File("/", "jwt.properties"));
-            byte[] keyBytes = (new BASE64Decoder()).decodeBuffer(configuration.getString("privateKey"));
+            byte[] keyBytes = Base64.getDecoder().decode(configuration.getString("privateKey"));
             PKCS8EncodedKeySpec keySpecPrivateKey = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory keyFactoryPrivateKey = KeyFactory.getInstance("RSA");
             privateKey = keyFactoryPrivateKey.generatePrivate(keySpecPrivateKey);
 
-            keyBytes = (new BASE64Decoder()).decodeBuffer(configuration.getString("publicKey"));
+            keyBytes = Base64.getDecoder().decode(configuration.getString("publicKey"));
             X509EncodedKeySpec keySpecPublicKey = new X509EncodedKeySpec(keyBytes);
             KeyFactory keyFactoryPublicKey = KeyFactory.getInstance("RSA");
             publicKey = keyFactoryPublicKey.generatePublic(keySpecPublicKey);
