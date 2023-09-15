@@ -1,12 +1,17 @@
 package com.llf.demo.module.example.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.llf.demo.common.JsonData;
 import com.llf.demo.common.annotation.RateLimit;
 import com.llf.demo.module.example.dto.ActivityRespDto;
 import com.llf.demo.util.ExcelUtil;
+import com.llf.demo.util.HttpUtil;
 import com.llf.demo.util.IpUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -102,18 +107,79 @@ public class ExcelController {
         logger.info("export3 spend time: " + (endTime - startTime));
     }
 
-    @RateLimit(key = "test", second = 10, count = 3)
-    @GetMapping("/activity")
-    public JsonData getActivity(HttpServletRequest request){
-        ActivityRespDto dto = new ActivityRespDto();
-        dto.setActivityId("1");
-        dto.setActivityName("我是谁");
-        dto.setActivityType("WHO");
-        dto.setStartTime(new Date());
-        dto.setEndTime(new Date());
 
-        logger.info("IP: " + IpUtil.getIpAddr(request));
+    /**
+     * 下载url的数据，转成excel
+     * @param response
+     * @param url
+     * @throws IOException
+     *
+     * http://127.0.0.1:8080/excel/exportFromUrl?url=http://xxxx/listRank
+     */
+    @GetMapping("/exportFromUrl")
+    public void exportFromUrl(HttpServletResponse response, String url) throws IOException {
+        if (StringUtils.isBlank(url)) {
+            throw new  RuntimeException("url is empty");
+        }
 
-        return JsonData.success(dto);
+        JSONObject object = HttpUtil.get(url);
+        if (object == null){
+            throw new  RuntimeException("url cannot fetch data");
+        }
+
+        JSONArray list = object.getJSONArray("data");
+        if (CollectionUtils.isEmpty(list)){
+            throw new  RuntimeException("list is empty");
+        }
+        for (int i = 0; i < list.size(); i++) {
+            JSONObject jsonObject = list.getJSONObject(i);
+            Double score = jsonObject.getDouble("score");
+            jsonObject.put("score", score.longValue());
+        }
+        String[] titles = { "uid", "sid", "nick", "score", "rankNo"};
+
+        long startTime = System.currentTimeMillis();
+        ExcelUtil.export(list, "data", titles, titles, response);
+        long endTime = System.currentTimeMillis();
+
+        logger.info("exportFromUrl spend time: " + (endTime - startTime));
     }
+
+    /**
+     * 下载url的数据，转成excel
+     * @param response
+     * @param url
+     * @throws IOException
+     *http://127.0.0.1:8080/excel/exportFromUrl2?url=https://xxxx/list
+     */
+    @GetMapping("/exportFromUrl2")
+    public void exportFromUrl2(HttpServletResponse response, String url) throws IOException {
+        if (StringUtils.isBlank(url)) {
+            throw new  RuntimeException("url is empty");
+        }
+
+        JSONObject object = HttpUtil.get(url);
+        if (object == null){
+            throw new  RuntimeException("url cannot fetch data");
+        }
+
+        JSONArray list = object.getJSONArray("data");
+        if (CollectionUtils.isEmpty(list)){
+            throw new  RuntimeException("list is empty");
+        }
+        for (int i = 0; i < list.size(); i++) {
+            JSONObject jsonObject = list.getJSONObject(i);
+            Double score = jsonObject.getDouble("score");
+            jsonObject.put("score", score.longValue());
+        }
+        String[] titles = { "unionId", "name", "score", "rank"};
+
+        long startTime = System.currentTimeMillis();
+        ExcelUtil.export(list, "data", titles, titles, response);
+        long endTime = System.currentTimeMillis();
+
+        logger.info("exportFromUrl spend time: " + (endTime - startTime));
+    }
+
+
 }
