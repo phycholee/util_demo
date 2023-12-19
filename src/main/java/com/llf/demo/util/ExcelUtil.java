@@ -13,10 +13,7 @@ import org.springframework.util.Assert;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -87,6 +84,29 @@ public class ExcelUtil {
         Assert.state(titles != null && titles.length > 0, "titles cannot be empty!");
         Assert.state(fields != null && fields.length > 0, "fields cannot be empty!");
 
+        Workbook wb = createWorkbook(data, titles, fields);
+        flush(fileName, wb, response);
+    }
+
+    /**
+     * 导出excel数据到文件
+     * @param data 需要导出的数据集合
+     * @param titles 列名数组
+     * @param fields 属性数组
+     * @param outputStream HttpServletResponse
+     * @param <T>
+     * @throws IOException
+     */
+    public static<T> void exportFile(List<T> data, String[] titles, String[] fields, FileOutputStream outputStream) throws IOException {
+        Assert.state(data != null, "data cannot be empty!");
+        Assert.state(titles != null && titles.length > 0, "titles cannot be empty!");
+        Assert.state(fields != null && fields.length > 0, "fields cannot be empty!");
+
+        Workbook wb = createWorkbook(data, titles, fields);
+        flushFile(wb, outputStream);
+    }
+
+    private static<T> Workbook createWorkbook(List<T> data, String[] titles, String[] fields){
         Workbook wb = new HSSFWorkbook();
         Sheet sheet = wb.createSheet(WorkbookUtil.createSafeSheetName("sheet 1"));
         sheet.setDefaultColumnWidth(20);
@@ -133,8 +153,7 @@ public class ExcelUtil {
                 }
             }
         }
-
-        flush(fileName, wb, response);
+        return wb;
     }
 
     /**
@@ -340,6 +359,18 @@ public class ExcelUtil {
         OutputStream out = response.getOutputStream();
         wb.write(out);
         out.flush();
+    }
+
+    /**
+     * 写出文件
+     * @param wb
+     * @param outputStream
+     * @throws IOException
+     */
+    private static void flushFile(Workbook wb, FileOutputStream outputStream) throws IOException {
+        logger.info("flushFile out.");
+        wb.write(outputStream);
+        outputStream.flush();
     }
 
     /**
