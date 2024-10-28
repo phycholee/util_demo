@@ -68,6 +68,37 @@ public class ExcelUtil {
         export(data, fileName, titles, fields, response);
     }
 
+
+    /**
+     * 不需要fields数组
+     * 使用反射去获取实体类属性名称
+     * @param data 需要导出的数据集合
+     * @param fileName 导出文件名称
+     * @param titles 列名数组
+     * @param outputStream HttpServletResponse
+     * @param clazz 实体类Class
+     * @param <T>
+     * @throws IOException
+     */
+    public static<T> void exportFile(List<T> data, String fileName, String[] titles, FileOutputStream outputStream, Class<T> clazz) throws IOException {
+        Assert.state(data != null, "data cannot be empty!");
+        Assert.state(fileName != null && !"".equals(fileName), "fileName cannot be empty!");
+        Assert.state(titles != null && titles.length > 0, "titles cannot be empty!");
+        Assert.state(clazz != null && clazz != Map.class, "clazz cannot be empty and cannot be Map.class!");
+
+        Field[] declaredFields = clazz.getDeclaredFields();
+        int length = declaredFields.length;
+        String[] fields = new String[length];
+        for (int i = 0; i < length; i++){
+            fields[i] = declaredFields[i].getName();
+        }
+
+        logger.info("use reflection to get the fields: {}", Arrays.toString(fields));
+
+        Workbook wb = createWorkbook(data, titles, fields);
+        flushFile(wb, outputStream);
+    }
+
     /**
      * 导出excel数据
      * @param data 需要导出的数据集合
@@ -156,22 +187,7 @@ public class ExcelUtil {
         return wb;
     }
 
-    /**
-     * 实体类需要导出的属性需要使用@ExcelColumn注解去指定 name(导出列名)、width(宽度)、dateFormat(时间格式)
-     * 使用反射去获取@ExcelColumn指定的配置
-     * 没有使用@ExcelColumn的属性会被忽略
-     * @param data 需要导出的数据集合
-     * @param fileName 导出文件名称
-     * @param response HttpServletResponse
-     * @param clazz 实体类Class
-     * @param <T>
-     * @throws IOException
-     */
-    public static<T> void export(List<T> data, String fileName, HttpServletResponse response, Class<T> clazz) throws IOException {
-        Assert.state(data != null, "data cannot be empty!");
-        Assert.state(fileName != null && !"".equals(fileName), "fileName cannot be empty!");
-        Assert.state(clazz != null && clazz != Map.class, "clazz cannot be empty and cannot be Map.class!");
-
+    private static<T> Workbook createWorkbook(List<T> data, Class<T> clazz){
         Workbook wb = new HSSFWorkbook();
         Sheet sheet = wb.createSheet(WorkbookUtil.createSafeSheetName("sheet 1"));
 
@@ -227,8 +243,45 @@ public class ExcelUtil {
                 }
             }
         }
+        return wb;
+    }
 
+    /**
+     * 实体类需要导出的属性需要使用@ExcelColumn注解去指定 name(导出列名)、width(宽度)、dateFormat(时间格式)
+     * 使用反射去获取@ExcelColumn指定的配置
+     * 没有使用@ExcelColumn的属性会被忽略
+     * @param data 需要导出的数据集合
+     * @param fileName 导出文件名称
+     * @param response HttpServletResponse
+     * @param clazz 实体类Class
+     * @param <T>
+     * @throws IOException
+     */
+    public static<T> void export(List<T> data, String fileName, HttpServletResponse response, Class<T> clazz) throws IOException {
+        Assert.state(data != null, "data cannot be empty!");
+        Assert.state(fileName != null && !"".equals(fileName), "fileName cannot be empty!");
+        Assert.state(clazz != null && clazz != Map.class, "clazz cannot be empty and cannot be Map.class!");
+
+        Workbook wb = createWorkbook(data, clazz);
         flush(fileName, wb, response);
+    }
+
+    /**
+     * 实体类需要导出的属性需要使用@ExcelColumn注解去指定 name(导出列名)、width(宽度)、dateFormat(时间格式)
+     * 使用反射去获取@ExcelColumn指定的配置
+     * 没有使用@ExcelColumn的属性会被忽略
+     * @param data 需要导出的数据集合
+     * @param outputStream HttpServletResponse
+     * @param clazz 实体类Class
+     * @param <T>
+     * @throws IOException
+     */
+    public static<T> void exportFile(List<T> data, FileOutputStream outputStream, Class<T> clazz) throws IOException {
+        Assert.state(data != null, "data cannot be empty!");
+        Assert.state(clazz != null && clazz != Map.class, "clazz cannot be empty and cannot be Map.class!");
+
+        Workbook wb = createWorkbook(data, clazz);
+        flushFile(wb, outputStream);
     }
 
     /**

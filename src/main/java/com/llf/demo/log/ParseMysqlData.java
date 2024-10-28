@@ -1,10 +1,12 @@
 package com.llf.demo.log;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.llf.demo.util.ExcelUtil;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,7 +20,7 @@ import java.util.Map;
 public class ParseMysqlData {
 
     public static void main(String[] args) throws IOException {
-        String text = FileUtils.readFileToString(new File("D:\\download\\人气嘉年华兑换记录-整个活动周期内.txt"), "UTF-8");
+        String text = FileUtils.readFileToString(new File("C:\\Users\\lilingfeng\\Downloads\\秋季赛银河列车瓜分奖金.txt"), "UTF-8");
         parse(text);
     }
 
@@ -44,7 +46,13 @@ public class ParseMysqlData {
         try {
             String jsonOutput = objectMapper.writeValueAsString(jsonArray);
             System.out.println(jsonOutput);
-        } catch (JsonProcessingException e) {
+
+            File file = new File("C:\\Users\\lilingfeng\\Downloads\\2024秋季赛银河列车瓜分奖金.xls");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            String[] titles = {"日期", "uid", "站台", "排名", "分奖红宝石总价值", "发奖时间"};
+            String[] fields = {"createDate", "uid", "target_station", "rank_no", "award_total_amount", "create_time"};
+            ExcelUtil.exportFile(JSON.parseArray(jsonOutput), titles, fields, fileOutputStream);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
